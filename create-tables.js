@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
   user:'root',
   password:'root',
   database:'video-on-demand-api'
-})
+});
 
 connection.connect(function(err){
   if(err) return console.log(err);
