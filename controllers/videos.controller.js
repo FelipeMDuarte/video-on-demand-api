@@ -1,39 +1,42 @@
-const { User }          = require('../models');
+const { Videos }          = require('../models');
 const authService       = require('../services/auth.service');
 const { to, ReE, ReS }  = require('../services/util.service');
 
 const create = async function(req, res){
     const body = req.body;
 
-    if(!body.unique_key && !body.email && !body.phone){
-        return ReE(res, 'Please enter an email or phone number to register.');
-    } else if(!body.password){
-        return ReE(res, 'Please enter a password to register.');
+    if(!body.nome || !body.date || !body.url_video || !body.categories){
+        return ReE(res, 'Please verify your json, some data is missing');
     }else{
-        let err, user;
-
-        [err, user] = await to(authService.createUser(body));
+        let err, video;
+        video = Videos.create(req.body)
 
         if(err) return ReE(res, err, 422);
-        return ReS(res, {message:'Successfully created new user.', user:user.toWeb(), token:user.getJWT()}, 201);
+        return ReS(res, {message:'Successfully created new user.', video}, 201);
     }
 }
 module.exports.create = create;
 
 const get = async function(req, res){
-    let user = req.user;
-
+    Videos.find({where:{id:}})
     return ReS(res, {user:user.toWeb()});
 }
 module.exports.get = get;
 
-const update = async function(req, res){
-    let err, user, data
-    user = req.user;
-    data = req.body;
-    user.set(data);
+const getAll = async function(req, res){
+    let videos_response;
+    Videos.findAll().then(videos => {
+      console.log('videos', videos);
+      videos_response = videos;
+    })
+    return ReS(res, videos_response.dataValues, 200);
+}
+module.exports.getAll = getAll;
 
-    [err, user] = await to(user.save());
+const update = async function(req, res){
+    let err, data
+    data = req.body;
+    // TODO update
     if(err){
         if(err.message=='Validation error') err = 'The email address or phone number is already in use';
         return ReE(res, err);
@@ -43,10 +46,8 @@ const update = async function(req, res){
 module.exports.update = update;
 
 const remove = async function(req, res){
-    let user, err;
-    user = req.user;
-
-    [err, user] = await to(user.destroy());
+    let err;
+    //TODO DELETE
     if(err) return ReE(res, 'error occured trying to delete user');
 
     return ReS(res, {message:'Deleted User'}, 204);

@@ -2,7 +2,7 @@ const { User } 	    = require('../models');
 const validator     = require('validator');
 const { to, TE }    = require('../services/util.service');
 
-const getUniqueKeyFromBody = function(body){// this is so they can send in 3 options unique_key, email, or phone and it will work
+const getUniqueKeyFromBody = function(body){
     let unique_key = body.unique_key;
     if(typeof unique_key==='undefined'){
         if(typeof body.email != 'undefined'){
@@ -36,7 +36,7 @@ const createUser = async (userInfo) => {
 
         return user;
 
-    }else if(validator.isMobilePhone(unique_key, 'any')){//checks if only phone number was sent
+    }else if(validator.isMobilePhone(unique_key, 'any')){
         auth_info.method = 'phone';
         userInfo.phone = unique_key;
 
@@ -50,7 +50,7 @@ const createUser = async (userInfo) => {
 }
 module.exports.createUser = createUser;
 
-const authUser = async function(userInfo){//returns token
+const authUser = async function(userInfo){
     let unique_key;
     let auth_info = {};
     auth_info.status = 'login';
@@ -68,7 +68,7 @@ const authUser = async function(userInfo){//returns token
         [err, user] = await to(User.findOne({where:{email:unique_key}}));
         if(err) TE(err.message);
 
-    }else if(validator.isMobilePhone(unique_key, 'any')){//checks if only phone number was sent
+    }else if(validator.isMobilePhone(unique_key, 'any')){
         auth_info.method='phone';
 
         [err, user] = await to(User.findOne({where:{phone:unique_key }}));

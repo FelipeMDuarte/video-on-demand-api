@@ -8,15 +8,20 @@ const path = require('path');
 
 
 require('./../middleware/passport')(passport)
-/* GET home page. */
+
 router.get('/', function(req, res, next) {
-  res.json({status:"success", message:"Parcel Pending API", data:{"version_number":"v1.0.0"}})
+  res.json({status:"success", message:"Landing page of the API", data:{"version_number":"v1.0.0"}})
 });
 
 
-router.post('/users', VideosController.create);
-router.get('/users', passport.authenticate('jwt', {session:false}), VideosController.get);
-router.put('/users', passport.authenticate('jwt', {session:false}), VideosController.update);
-router.delete('/users', passport.authenticate('jwt', {session:false}), VideosController.remove);
+router.post('/videos', VideosController.create);
+router.get('/videos', VideosController.getAll);
+// router.get('/videos/<int:id>', VideosController.get)
+router.put('/videos', VideosController.update);
+router.delete('/videos', VideosController.remove);
+
+// router.get('/videos', passport.authenticate('jwt', {session:false}), VideosController.get);
+// router.put('/videos', passport.authenticate('jwt', {session:false}), VideosController.update);
+// router.delete('/videos', passport.authenticate('jwt', {session:false}), VideosController.remove);
 
 module.exports = router;
